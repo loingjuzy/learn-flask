@@ -16,15 +16,15 @@ POOL = PooledDB(
     # ping MySQL服务端，检查是否服务可用。# 如：0 = None = never, 1 = default = whenever it is requested,
     # 2 = when a cursor is created, 4 = when a query is executed, 7 = always
     host='127.0.0.1',
-    port=3306,
+    port=23308,
     user='root',
-    password='Abc@1234',
-    database='pooldb',
+    password='Abc@12345',
+    database='learnmemory',
     charset='utf8'
 )
 
 
-def func():
+def func(sql):
     # 检测当前正在运行连接数的是否小于最大链接数，如果不小于则：等待或报raise TooManyConnections异常
     # 否则
     # 则优先去初始化时创建的链接中获取链接 SteadyDBConnection。
@@ -36,11 +36,8 @@ def func():
     # print(th, '链接被拿走了', conn1._con)
     # print(th, '池子里目前有', pool._idle_cache, '\r\n')
 
-    cursor = conn.cursor()
-    cursor.execute('select * from tb1')
-    result = cursor.fetchall()
-    print(result)
+    cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+    cursor.execute(sql)
+    conn.commit()
     conn.close()
-
-
-func()
+    return  cursor.fetchall()
